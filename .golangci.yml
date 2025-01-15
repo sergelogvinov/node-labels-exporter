@@ -95,6 +95,7 @@ linters-settings:
       - default # Contains all imports that could not be matched to another section type.
       - prefix(github.com/sergelogvinov) # Groups all imports with the specified Prefix.
       - prefix(k8s.io) # Groups all imports with the specified Prefix.
+      - prefix(sigs.k8s.io) # Groups all imports with the specified Prefix.
   cyclop:
     # the maximal code complexity to report
     max-complexity: 30

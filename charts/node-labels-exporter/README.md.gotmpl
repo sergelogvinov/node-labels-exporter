@@ -1,0 +1,23 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+## Deploy
+
+```shell
+helm upgrade -i -n kube-system node-labels-exporter oci://ghcr.io/sergelogvinov/charts/node-labels-exporter
+```
+
+{{ template "chart.valuesSection" . }}

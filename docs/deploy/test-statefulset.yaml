@@ -11,6 +11,9 @@ spec:
   replicas: 2
   template:
     metadata:
+      annotations:
+        injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
+        injector.node-labels-exporter.sinextra.dev/node-pool: "project.io/node-pool"
       labels:
         app: alpine
     spec:
@@ -32,6 +35,7 @@ spec:
                     values:
                       - alpine
               topologyKey: topology.kubernetes.io/zone
+      enableServiceLinks: false
       containers:
         - name: alpine
           image: alpine

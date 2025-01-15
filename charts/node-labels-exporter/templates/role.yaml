@@ -1,0 +1,29 @@
+# permissions to do leader election.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "node-labels-exporter.fullname" . }}
+  labels:
+    {{- include "node-labels-exporter.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups: [""]
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - patch
+      - update

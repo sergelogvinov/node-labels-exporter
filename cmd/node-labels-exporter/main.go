@@ -1,5 +1,5 @@
 /*
-Copyright 2024 The Kubernetes Authors.
+Copyright 2025 The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,21 +20,27 @@ package main
 import (
 	"context"
 	goflag "flag"
-	"net/http"
 	"os"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	flag "github.com/spf13/pflag"
 
+	"github.com/sergelogvinov/node-labels-exporter/pkg/nodelabelcontroller"
+
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/component-base/metrics/legacyregistry"
-	"k8s.io/klog/v2"
+
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 var (
@@ -48,8 +54,12 @@ var (
 	kubeAPIQPS   = flag.Float32("kube-api-qps", 5, "QPS to use while communicating with the kubernetes apiserver. Defaults to 5.0.")
 	kubeAPIBurst = flag.Int("kube-api-burst", 10, "Burst to use while communicating with the kubernetes apiserver. Defaults to 10.")
 
-	httpEndpoint = flag.String("http-endpoint", ":8443", "The TCP network address where the HTTPS server for diagnostics, including pprof, metrics will listen (example: `:8443`).")
-	metricsPath  = flag.String("metrics-path", "/metrics", "The HTTP path where prometheus metrics will be exposed. Default is `/metrics`.")
+	certDir = flag.String("cert-dir", "certs", "webhook certificate directory")
+	port    = flag.Int("port", 9443, "The port to which the admission webhook endpoint should bind")
+
+	metricsEndpoint = flag.String("metrics-endpoint", ":8080", "The TCP network address where the HTTPS server for diagnostics, including pprof, metrics will listen (example: `:8080`).")
+
+	scheme = runtime.NewScheme()
 )
 
 const (
@@ -57,41 +67,46 @@ const (
 	ResyncPeriodOfNodeInformer = 1 * time.Hour
 )
 
+func init() {
+	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+	utilruntime.Must(corev1.AddToScheme(scheme))
+}
+
 func main() {
 	var config *rest.Config
 	var err error
 
-	klog.InitFlags(nil)
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Set("logtostderr", "true") //nolint: errcheck
 	flag.Parse()
 
-	klog.V(2).InfoS("Version", "version", "0.1", "gitVersion", version, "gitCommit", commit)
+	ctrl.SetLogger(zap.New(zap.UseDevMode(false)))
+	log := ctrl.Log.WithName("init")
+
+	log.Info("Node Labels exporter version", "version", version, "gitCommit", commit)
 
 	if *showVersion {
-		klog.Infof("Node labels Controller: version %v, GitVersion %s", "0.1", version)
 		os.Exit(0)
 	}
-
-	ctx := context.Background()
 
 	// get the KUBECONFIG from env if specified (useful for local/debug cluster)
 	kubeconfigEnv := os.Getenv("KUBECONFIG")
 
 	if kubeconfigEnv != "" {
-		klog.Infof("Found KUBECONFIG environment variable set, using that..")
+		log.Info("Found KUBECONFIG environment variable set, using that..")
 		kubeconfig = &kubeconfigEnv
 	}
 
 	if *master != "" || *kubeconfig != "" {
-		klog.Infof("Either master or kubeconfig specified. building kube config from that..")
+		log.Info("Either master or kubeconfig specified. building kube config from that..")
 		config, err = clientcmd.BuildConfigFromFlags(*master, *kubeconfig)
 	} else {
-		klog.Infof("Building kube configs for running in cluster...")
+		log.Info("Building kube configs for running in cluster...")
 		config, err = rest.InClusterConfig()
 	}
 	if err != nil {
-		klog.Fatalf("Failed to create config: %v", err)
+		log.Error(err, "Failed to create config: %v")
+		os.Exit(1)
 	}
 
 	config.QPS = *kubeAPIQPS
@@ -101,53 +116,63 @@ func main() {
 	coreConfig.ContentType = runtime.ContentTypeProtobuf
 	clientset, err := kubernetes.NewForConfig(coreConfig)
 	if err != nil {
-		klog.ErrorS(err, "Failed to create a Clientset")
-		klog.FlushAndExit(klog.ExitFlushTimeout, 1)
+		log.Error(err, "Failed to create a Clientset")
+		os.Exit(1)
 	}
+
+	mgr, err := ctrl.NewManager(config, ctrl.Options{
+		Scheme: scheme,
+		WebhookServer: webhook.NewServer(webhook.Options{
+			Port:    *port,
+			CertDir: *certDir,
+		}),
+		Metrics: metricsserver.Options{
+			BindAddress: *metricsEndpoint,
+		},
+		LeaderElection: false,
+	})
+	if err != nil {
+		log.Error(err, "unable to start manager")
+		os.Exit(1)
+	}
+
+	ctrl.SetLogger(log)
 
 	factory := informers.NewSharedInformerFactory(clientset, ResyncPeriodOfNodeInformer)
-	// nodeLister := factory.Core().V1().Nodes().Lister()
+	nodeLister := factory.Core().V1().Nodes().Lister()
 
-	// Prepare http endpoint for metrics
-	mux := http.NewServeMux()
-	gatherers := prometheus.Gatherers{
-		legacyregistry.DefaultGatherer,
-	}
+	log.Info("Starting Node Labels exporter")
 
-	if *httpEndpoint != "" {
-		// m := libmetrics.New("controller")
-		reg := prometheus.NewRegistry()
-		reg.MustRegister([]prometheus.Collector{}...)
-		// provisionerOptions = append(provisionerOptions, controller.MetricsInstance(m))
-		gatherers = append(gatherers, reg)
+	m := nodelabelcontroller.NewNodeLabelsEnvInjector(clientset, scheme, nodeLister, ctrl.Log.WithName("controllers").WithName("NodeLabelsEnvInjector"))
 
-		mux.Handle(*metricsPath,
-			promhttp.InstrumentMetricHandler(
-				reg,
-				promhttp.HandlerFor(gatherers, promhttp.HandlerOpts{})))
+	mgr.GetWebhookServer().Register("/webhook", &webhook.Admission{
+		Handler: admission.HandlerFunc(m.Handle),
+	})
 
-		go func() {
-			klog.Infof("ServeMux listening at %q", *httpEndpoint)
-			err := http.ListenAndServe(*httpEndpoint, mux)
-			if err != nil {
-				klog.Fatalf("Failed to start HTTP server at specified address (%q) and metrics path (%q): %s", *httpEndpoint, *metricsPath, err)
-			}
-		}()
-	}
-
-	klog.InfoS("Starting node labels exporter")
+	ctx, cancel := context.WithCancel(context.Background())
 
 	run := func(ctx context.Context) {
+		defer cancel()
+
 		factory.Start(ctx.Done())
 		cacheSyncResult := factory.WaitForCacheSync(ctx.Done())
 		for _, v := range cacheSyncResult {
 			if !v {
-				klog.Fatalf("Failed to sync Informers!")
+				log.Info("Failed to sync Informers!")
+				return
 			}
 		}
 
-		// nodeLabelsController.Run(ctx)
+		if err := mgr.Start(ctx); err != nil {
+			log.Error(err, "problem running manage")
+			os.Exit(1)
+		}
 	}
+
+	go func() {
+		<-ctrl.SetupSignalHandler().Done()
+		cancel()
+	}()
 
 	run(ctx)
 }

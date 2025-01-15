@@ -1,0 +1,50 @@
+# node-labels-exporter
+
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.1](https://img.shields.io/badge/AppVersion-v0.0.1-informational?style=flat-square)
+
+Inject node labels to the Pods as environment variables.
+
+**Homepage:** <https://github.com/sergelogvinov/node-labels-exporter>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| sergelogvinov |  | <https://github.com/sergelogvinov> |
+
+## Source Code
+
+* <https://github.com/sergelogvinov/node-labels-exporter>
+
+## Deploy
+
+```shell
+helm upgrade -i -n kube-system node-labels-exporter oci://ghcr.io/sergelogvinov/charts/node-labels-exporter
+```
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| replicaCount | int | `1` |  |
+| image.repository | string | `"ghcr.io/sergelogvinov/node-labels-exporter"` |  |
+| image.pullPolicy | string | `"Always"` |  |
+| image.tag | string | `""` |  |
+| imagePullSecrets | list | `[]` |  |
+| nameOverride | string | `""` |  |
+| fullnameOverride | string | `""` |  |
+| priorityClassName | string | `"system-cluster-critical"` | Controller pods priorityClassName. |
+| serviceAccount | object | `{"annotations":{},"automount":true,"create":true,"name":""}` | Pods Service Account. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/ |
+| podAnnotations | object | `{}` | Annotations for controller pod. ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ |
+| podLabels | object | `{}` | Labels to a Pod. ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/ |
+| podSecurityContext | object | `{"fsGroup":65532,"fsGroupChangePolicy":"OnRootMismatch","runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532}` | Controller Security Context. ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Controller Container Security Context. ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod |
+| updateStrategy | object | `{"rollingUpdate":{"maxUnavailable":1},"type":"RollingUpdate"}` | Controller deployment update strategy type. ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment |
+| service | object | `{"type":"ClusterIP"}` | Service parameters ref: https://kubernetes.io/docs/concepts/services-networking/service/ |
+| metrics | object | `{"enabled":false,"port":8080,"type":"annotation"}` | Prometheus metrics |
+| metrics.enabled | bool | `false` | Enable Prometheus metrics. |
+| metrics.port | int | `8080` | Prometheus metrics port. |
+| resources | object | `{"requests":{"cpu":"50m","memory":"64Mi"}}` | Resource requests and limits. ref: https://kubernetes.io/docs/user-guide/compute-resources/ |
+| nodeSelector | object | `{}` | Node labels for controller assignment. ref: https://kubernetes.io/docs/user-guide/node-selection/ |
+| tolerations | list | `[{"effect":"NoSchedule","key":"node-role.kubernetes.io/control-plane"}]` | Tolerations for controller assignment. ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ |
+| affinity | object | `{}` | Affinity for controller assignment. ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity |
