@@ -5,10 +5,10 @@ kind: ServiceAccount
 metadata:
   name: node-labels-exporter
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 automountServiceAccountToken: true
@@ -19,10 +19,10 @@ kind: ClusterRole
 metadata:
   name: node-labels-exporter
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 rules:
@@ -55,10 +55,10 @@ kind: ClusterRoleBinding
 metadata:
   name: node-labels-exporter
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -76,10 +76,10 @@ kind: Role
 metadata:
   name: node-labels-exporter
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 rules:
@@ -110,10 +110,10 @@ kind: RoleBinding
 metadata:
   name: node-labels-exporter
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 roleRef:
@@ -131,10 +131,10 @@ kind: Service
 metadata:
   name: node-labels-exporter
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 spec:
@@ -154,10 +154,10 @@ kind: Deployment
 metadata:
   name: node-labels-exporter
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 spec:
@@ -175,10 +175,10 @@ spec:
     metadata:
       annotations:
       labels:
-        helm.sh/chart: node-labels-exporter-0.1.0
+        helm.sh/chart: node-labels-exporter-0.1.1
         app.kubernetes.io/name: node-labels-exporter
         app.kubernetes.io/instance: node-labels-exporter
-        app.kubernetes.io/version: "v0.0.1"
+        app.kubernetes.io/version: "v0.1.0"
         app.kubernetes.io/managed-by: Helm
     spec:
       priorityClassName: system-cluster-critical
@@ -239,10 +239,10 @@ kind: Certificate
 metadata:
   name: node-labels-exporter-webhook-ca
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 spec:
@@ -265,10 +265,10 @@ kind: Certificate
 metadata:
   name: node-labels-exporter-webhook
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 spec:
@@ -294,10 +294,10 @@ kind: Issuer
 metadata:
   name: node-labels-exporter-webhook-issuer
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 spec:
@@ -310,10 +310,10 @@ metadata:
   name: node-labels-exporter-webhook-ca
   namespace: kube-system
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   ca:
@@ -327,10 +327,10 @@ metadata:
   annotations:
     cert-manager.io/inject-ca-from: kube-system/node-labels-exporter-webhook
   labels:
-    helm.sh/chart: node-labels-exporter-0.1.0
+    helm.sh/chart: node-labels-exporter-0.1.1
     app.kubernetes.io/name: node-labels-exporter
     app.kubernetes.io/instance: node-labels-exporter
-    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/version: "v0.1.0"
     app.kubernetes.io/managed-by: Helm
   namespace: kube-system
 webhooks:
