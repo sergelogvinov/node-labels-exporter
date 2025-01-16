@@ -1,0 +1,355 @@
+---
+# Source: node-labels-exporter/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: node-labels-exporter
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+automountServiceAccountToken: true
+---
+# Source: node-labels-exporter/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-labels-exporter
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+rules:
+  - apiGroups: [""]
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+  - apiGroups: [""]
+    resources:
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+
+  - apiGroups: [""]
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - patch
+      - update
+---
+# Source: node-labels-exporter/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node-labels-exporter
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: node-labels-exporter
+subjects:
+- kind: ServiceAccount
+  name: node-labels-exporter
+  namespace: kube-system
+---
+# Source: node-labels-exporter/templates/role.yaml
+# permissions to do leader election.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: node-labels-exporter
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+rules:
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups: [""]
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - patch
+      - update
+---
+# Source: node-labels-exporter/templates/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: node-labels-exporter
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: node-labels-exporter
+subjects:
+- kind: ServiceAccount
+  name: node-labels-exporter
+  namespace: kube-system
+---
+# Source: node-labels-exporter/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-labels-exporter
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+spec:
+  type: ClusterIP
+  ports:
+    - port: 443
+      targetPort: https
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+---
+# Source: node-labels-exporter/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-labels-exporter
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: node-labels-exporter
+      app.kubernetes.io/instance: node-labels-exporter
+  template:
+    metadata:
+      annotations:
+      labels:
+        helm.sh/chart: node-labels-exporter-0.1.0
+        app.kubernetes.io/name: node-labels-exporter
+        app.kubernetes.io/instance: node-labels-exporter
+        app.kubernetes.io/version: "v0.0.1"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      priorityClassName: system-cluster-critical
+      enableServiceLinks: false
+      serviceAccountName: node-labels-exporter
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+      containers:
+        - name: node-labels-exporter
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+          image: "ghcr.io/sergelogvinov/node-labels-exporter:v0.0.1"
+          imagePullPolicy: Always
+          args:
+            - "--cert-dir=/etc/webhook/certs"
+            - "--port=6443"
+          ports:
+            - name: https
+              containerPort: 6443
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          volumeMounts:
+            - name: webhook-cert
+              mountPath: /etc/webhook/certs
+              readOnly: true
+      volumes:
+        - name: webhook-cert
+          secret:
+            secretName: node-labels-exporter-webhook
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: node-labels-exporter
+              app.kubernetes.io/instance: node-labels-exporter
+---
+# Source: node-labels-exporter/templates/certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: node-labels-exporter-webhook-ca
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+spec:
+  secretName: node-labels-exporter-webhook-ca
+  duration: 87600h # 10y
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: node-labels-exporter-webhook-issuer
+  commonName: ca.webhook.node-labels-exporter
+  isCA: true
+  usages:
+    - digital signature
+    - key encipherment
+    - cert sign
+---
+# Source: node-labels-exporter/templates/certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: node-labels-exporter-webhook
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+spec:
+  secretName: node-labels-exporter-webhook
+  duration: 8760h # 1y
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: node-labels-exporter-webhook-issuer
+  dnsNames:
+    - node-labels-exporter
+    - node-labels-exporter.kube-system
+    - node-labels-exporter.kube-system.svc
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth
+---
+# Source: node-labels-exporter/templates/certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: node-labels-exporter-webhook-issuer
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+spec:
+  selfSigned: {}
+---
+# Source: node-labels-exporter/templates/certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: node-labels-exporter-webhook-ca
+  namespace: kube-system
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  ca:
+    secretName: node-labels-exporter-webhook-ca
+---
+# Source: node-labels-exporter/templates/webhookconfiguration.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: node-labels-exporter-webhook-configuration
+  annotations:
+    cert-manager.io/inject-ca-from: kube-system/node-labels-exporter-webhook
+  labels:
+    helm.sh/chart: node-labels-exporter-0.1.0
+    app.kubernetes.io/name: node-labels-exporter
+    app.kubernetes.io/instance: node-labels-exporter
+    app.kubernetes.io/version: "v0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: kube-system
+webhooks:
+- name: injector.node-labels-exporter.sinextra.dev
+  admissionReviewVersions: ["v1"]
+  clientConfig:
+    service:
+      name: node-labels-exporter
+      namespace: kube-system
+      path: /webhook
+  failurePolicy: Ignore
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+    - pods/binding
+  sideEffects: None

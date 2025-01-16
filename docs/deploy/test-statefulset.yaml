@@ -13,7 +13,7 @@ spec:
     metadata:
       annotations:
         injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
-        injector.node-labels-exporter.sinextra.dev/node-pool: "project.io/node-pool"
+        injector.node-labels-exporter.sinextra.dev/node-pool: "node.kubernetes.io/instance-type"
       labels:
         app: alpine
     spec:
