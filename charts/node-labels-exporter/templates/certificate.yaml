@@ -1,0 +1,65 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "node-labels-exporter.fullname" . }}-webhook-issuer
+  labels:
+    {{- include "node-labels-exporter.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "node-labels-exporter.fullname" . }}-webhook-ca
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "node-labels-exporter.labels" . | nindent 4 }}
+spec:
+  ca:
+    secretName: {{ include "node-labels-exporter.fullname" . }}-webhook-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "node-labels-exporter.fullname" . }}-webhook-ca
+  labels:
+    {{- include "node-labels-exporter.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: {{ include "node-labels-exporter.fullname" . }}-webhook-ca
+  duration: 87600h # 10y
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: {{ include "node-labels-exporter.fullname" . }}-webhook-issuer
+  commonName: ca.webhook.node-labels-exporter
+  isCA: true
+  usages:
+    - digital signature
+    - key encipherment
+    - cert sign
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "node-labels-exporter.fullname" . }}-webhook
+  labels:
+    {{- include "node-labels-exporter.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: {{ include "node-labels-exporter.fullname" . }}-webhook
+  duration: 8760h # 1y
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: {{ include "node-labels-exporter.fullname" . }}-webhook-issuer
+  dnsNames:
+    - {{ include "node-labels-exporter.fullname" . }}
+    - {{ include "node-labels-exporter.fullname" . }}.{{ .Release.Namespace }}
+    - {{ include "node-labels-exporter.fullname" . }}.{{ .Release.Namespace }}.svc
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth

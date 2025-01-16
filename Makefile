@@ -66,7 +66,7 @@ build: build-node-labels-exporter ## Build
 
 .PHONY: run
 run: build-node-labels-exporter ## Run
-	./bin/node-labels-exporter-$(ARCH) -v=5 --http-endpoint=:8080
+	./bin/node-labels-exporter-$(ARCH) --metrics-endpoint=:8080
 
 .PHONY: lint
 lint: ## Lint Code
@@ -103,10 +103,10 @@ helm-release: ## Helm Release
 .PHONY: docs
 docs:
 	yq -i '.appVersion = "$(TAG)"' charts/node-labels-exporter/Chart.yaml
-	helm template -n csi-hybrid node-labels-exporter \
+	helm template -n kube-system node-labels-exporter \
 		-f charts/node-labels-exporter/values.edge.yaml \
 		charts/node-labels-exporter > docs/deploy/node-labels-exporter.yml
-	helm template -n csi-hybrid node-labels-exporter \
+	helm template -n kube-system node-labels-exporter \
 		--set-string image.tag=$(TAG) \
 		charts/node-labels-exporter > docs/deploy/node-labels-exporter-release.yml
 	helm-docs --sort-values-order=file charts/node-labels-exporter

@@ -1,0 +1,30 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: {{ include "node-labels-exporter.fullname" . }}-webhook-configuration
+  annotations:
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ template "node-labels-exporter.fullname" . }}-webhook
+  labels:
+    {{- include "node-labels-exporter.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+webhooks:
+- name: injector.{{ include "node-labels-exporter.fullname" . }}.sinextra.dev
+  admissionReviewVersions: ["v1"]
+  clientConfig:
+    service:
+      name: {{ include "node-labels-exporter.fullname" . }}
+      namespace: {{ .Release.Namespace }}
+      path: /webhook
+  failurePolicy: Ignore
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+    - pods/binding
+  sideEffects: None
