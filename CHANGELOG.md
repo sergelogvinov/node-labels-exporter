@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/sergelogvinov/node-labels-exporter/compare/v0.2.0...v0.3.0) (2025-01-17)
+
+
+### Features
+
+* **chart:** add namespaces options ([5308a7d](https://github.com/sergelogvinov/node-labels-exporter/commit/5308a7dd46bd4803627416feb2e6a1293fa838e7))
+* container allow list ([02458ce](https://github.com/sergelogvinov/node-labels-exporter/commit/02458cea479837cda1932f81d4d95cf49c64dba1))
+
 ## [0.2.0](https://github.com/sergelogvinov/node-labels-exporter/compare/v0.1.0...v0.2.0) (2025-01-16)
 
 
