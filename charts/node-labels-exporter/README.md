@@ -1,8 +1,10 @@
 # node-labels-exporter
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2.0](https://img.shields.io/badge/AppVersion-v0.2.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2.0](https://img.shields.io/badge/AppVersion-v0.2.0-informational?style=flat-square)
 
-Inject node labels to the Pods as environment variables.
+The Node Labels Exporter injects node labels as environment variables into pods.
+
+Applications can then use these environment variables without needing access to the Kubernetes API.
 
 **Homepage:** <https://github.com/sergelogvinov/node-labels-exporter>
 
@@ -22,17 +24,33 @@ Inject node labels to the Pods as environment variables.
 helm upgrade -i -n kube-system node-labels-exporter oci://ghcr.io/sergelogvinov/charts/node-labels-exporter
 ```
 
+## Usage
+
+Add the following annotations to the pod:
+
+```yaml
+annotations:
+  injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
+```
+
+After the pod shedduled, it will have the following environment variable:
+
+```shell
+ZONE=us-central1-a
+```
+
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | replicaCount | int | `1` |  |
 | image.repository | string | `"ghcr.io/sergelogvinov/node-labels-exporter"` |  |
-| image.pullPolicy | string | `"Always"` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | fullnameOverride | string | `""` |  |
+| webhooks | object | `{"failurePolicy":"Ignore","namespaceSelector":{}}` | Admission Control webhooks configuration. ref: https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector |
 | priorityClassName | string | `"system-cluster-critical"` | Controller pods priorityClassName. |
 | serviceAccount | object | `{"annotations":{},"automount":true,"create":true,"name":""}` | Pods Service Account. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/ |
 | podAnnotations | object | `{}` | Annotations for controller pod. ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ |

@@ -16,7 +16,11 @@ webhooks:
       name: {{ include "node-labels-exporter.fullname" . }}
       namespace: {{ .Release.Namespace }}
       path: /webhook
-  failurePolicy: Ignore
+  failurePolicy: {{ .Values.webhooks.failurePolicy }}
+  {{- with .Values.webhooks.namespaceSelector }}
+  namespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   rules:
   - apiGroups:
     - ""

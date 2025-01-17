@@ -1,3 +1,14 @@
+image:
+  pullPolicy: Always
+
+webhooks:
+  failurePolicy: Ignore
+  namespaceSelector:
+    matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values: ["prod", "staging"]
+
 metrics:
   enabled: true
 
