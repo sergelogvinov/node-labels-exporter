@@ -6,6 +6,8 @@
 
 {{ template "chart.description" . }}
 
+Applications can then use these environment variables without needing access to the Kubernetes API.
+
 {{ template "chart.homepageLine" . }}
 
 {{ template "chart.maintainersSection" . }}
@@ -18,6 +20,21 @@
 
 ```shell
 helm upgrade -i -n kube-system node-labels-exporter oci://ghcr.io/sergelogvinov/charts/node-labels-exporter
+```
+
+## Usage
+
+Add the following annotations to the pod:
+
+```yaml
+annotations:
+  injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
+```
+
+After the pod shedduled, it will have the following environment variable:
+
+```shell
+ZONE=us-central1-a
 ```
 
 {{ template "chart.valuesSection" . }}

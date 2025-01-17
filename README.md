@@ -8,8 +8,8 @@ Using pod annotations, you can specify which node labels to export to the pods.
 
 ```yaml
 annotations:
-    injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
-    injector.node-labels-exporter.sinextra.dev/node-pool: "node.kubernetes.io/instance-type"
+  injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
+  injector.node-labels-exporter.sinextra.dev/node-pool: "node.kubernetes.io/instance-type"
 ```
 
 In the POD, the environment variables will be:
@@ -83,6 +83,7 @@ The pod has the environment variables `NODE_POOL` and `ZONE` with the values of 
 ## Resources
 
 * [Kubernetes Admission Controllers](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/)
+* [Matching Requests NamespaceSelector](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector)
 
 ## Contributing
 
