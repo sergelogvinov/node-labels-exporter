@@ -14,6 +14,10 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# -- Node labels extra arguments.
+# example: --zap-stacktrace-level=info --zap-log-level=debug
+args: []
+
 # -- Admission Control webhooks configuration.
 # ref: https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector
 webhooks:

@@ -48,8 +48,11 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-            - "--cert-dir=/etc/webhook/certs"
-            - "--port=6443"
+            - --cert-dir=/etc/webhook/certs
+            - --port=6443
+            {{- with .Values.args }}
+            {{- . | toYaml | nindent 12 }}
+            {{- end }}
           ports:
             - name: https
               containerPort: 6443

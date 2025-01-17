@@ -28,6 +28,10 @@ Add the following annotations to the pod:
 
 ```yaml
 annotations:
+  # Specify the container name to inject the node labels, separated by commas
+  # If not specified, the node labels will be injected into all containers
+  node-labels-exporter.sinextra.dev/containers: "alpine,init-container"
+  # Specify the node labels to inject the value
   injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
 ```
 

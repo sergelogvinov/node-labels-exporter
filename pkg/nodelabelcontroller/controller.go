@@ -61,6 +61,8 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 		return admission.Allowed("not a Create request")
 	}
 
+	i.log.V(1).Info("Handling request", "kind", req.RequestKind.Kind, "namespace", req.Namespace, "uid", req.UID)
+
 	if req.RequestKind.Kind == "Pod" {
 		pod := &corev1.Pod{}
 		if err := i.decoder.Decode(req, pod); err != nil {
@@ -69,7 +71,12 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 			return admission.Errored(http.StatusBadRequest, err)
 		}
 
-		i.log.V(4).Info("Handling request", "namespace", pod.Namespace, "name", pod.Name)
+		name := pod.Name
+		if name == "" {
+			name = pod.GenerateName
+		}
+
+		i.log.V(1).Info("Handling request", "namespace", pod.Namespace, "name", name)
 
 		if !setEnvValueFromToPod(pod) {
 			return admission.Allowed("skipped")
@@ -81,7 +88,7 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 			return admission.Errored(http.StatusInternalServerError, err)
 		}
 
-		i.log.Info("Injecting envFrom to pod", "namespace", pod.Namespace, "name", pod.Name)
+		i.log.Info("Injecting envFrom to pod", "namespace", pod.Namespace, "name", name)
 		return admission.PatchResponseFromRaw(req.Object.Raw, podRaw)
 	}
 
@@ -98,7 +105,7 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 			return admission.Allowed("skipped")
 		}
 
-		i.log.V(4).Info("Handling request", "node", binding.Target.Name, "namespace", binding.Namespace, "name", binding.Name)
+		i.log.V(1).Info("Handling request", "node", binding.Target.Name, "namespace", binding.Namespace, "name", binding.Name)
 
 		pod, err := i.client.CoreV1().Pods(binding.Namespace).Get(ctx, binding.Name, metav1.GetOptions{})
 		if err != nil {

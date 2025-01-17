@@ -1,6 +1,6 @@
 # node-labels-exporter
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2.0](https://img.shields.io/badge/AppVersion-v0.2.0-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2.0](https://img.shields.io/badge/AppVersion-v0.2.0-informational?style=flat-square)
 
 The Node Labels Exporter injects node labels as environment variables into pods.
 
@@ -30,6 +30,10 @@ Add the following annotations to the pod:
 
 ```yaml
 annotations:
+  # Specify the container name to inject the node labels, separated by commas
+  # If not specified, the node labels will be injected into all containers
+  node-labels-exporter.sinextra.dev/containers: "alpine,init-container"
+  # Specify the node labels to inject the value
   injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
 ```
 
@@ -50,6 +54,7 @@ ZONE=us-central1-a
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | fullnameOverride | string | `""` |  |
+| args | list | `[]` | Node labels extra arguments. example: --zap-stacktrace-level=info --zap-log-level=debug |
 | webhooks | object | `{"failurePolicy":"Ignore","namespaceSelector":{}}` | Admission Control webhooks configuration. ref: https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector |
 | priorityClassName | string | `"system-cluster-critical"` | Controller pods priorityClassName. |
 | serviceAccount | object | `{"annotations":{},"automount":true,"create":true,"name":""}` | Pods Service Account. ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/ |

@@ -1,5 +1,10 @@
 image:
   pullPolicy: Always
+  tag: test
+
+args:
+  - --zap-stacktrace-level=error
+  - --zap-log-level=debug
 
 webhooks:
   failurePolicy: Ignore
@@ -7,7 +12,7 @@ webhooks:
     matchExpressions:
       - key: kubernetes.io/metadata.name
         operator: In
-        values: ["prod", "staging"]
+        values: ["default"]
 
 metrics:
   enabled: true
