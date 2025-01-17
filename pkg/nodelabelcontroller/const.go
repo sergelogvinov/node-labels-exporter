@@ -17,5 +17,6 @@ limitations under the License.
 package nodelabelcontroller
 
 const (
-	annKeyPrefix = "injector.node-labels-exporter.sinextra.dev/"
+	annContainers = "node-labels-exporter.sinextra.dev/containers"
+	annKeyPrefix  = "injector.node-labels-exporter.sinextra.dev/"
 )

@@ -8,6 +8,10 @@ Using pod annotations, you can specify which node labels to export to the pods.
 
 ```yaml
 annotations:
+  # Specify the container name to inject the node labels, separated by commas
+  # If not specified, the node labels will be injected into all containers
+  node-labels-exporter.sinextra.dev/containers: "alpine,init-container"
+  # Specify the node labels to inject the value, environment ZONE and NODE_POOL will be added to the containers
   injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
   injector.node-labels-exporter.sinextra.dev/node-pool: "node.kubernetes.io/instance-type"
 ```

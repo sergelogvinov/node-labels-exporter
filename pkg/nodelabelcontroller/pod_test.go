@@ -394,6 +394,168 @@ func Test_setEnvValueFromToPod(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "pod with envs and specified container",
+			pod: &corev1.Pod{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "pod0",
+					Annotations: map[string]string{
+						annKeyPrefix + "zone": "value1",
+						annContainers:         "container0",
+					},
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name: "container0",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "ENV1",
+									Value: "value1",
+								},
+								podEnvSecret,
+							},
+						},
+						{
+							Name: "container1",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "ENV1",
+									Value: "value1",
+								},
+								podEnvSecret,
+							},
+						},
+					},
+				},
+			},
+			expected: &corev1.Pod{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "pod0",
+					Annotations: map[string]string{
+						annKeyPrefix + "zone": "value1",
+						annContainers:         "container0",
+					},
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name: "container0",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "ENV1",
+									Value: "value1",
+								},
+								podEnvSecret,
+								{
+									Name: "ZONE",
+									ValueFrom: &corev1.EnvVarSource{
+										FieldRef: &corev1.ObjectFieldSelector{
+											FieldPath: "metadata.labels['value1']",
+										},
+									},
+								},
+							},
+						},
+						{
+							Name: "container1",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "ENV1",
+									Value: "value1",
+								},
+								podEnvSecret,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "pod with envs and init container",
+			pod: &corev1.Pod{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "pod0",
+					Annotations: map[string]string{
+						annKeyPrefix + "zone": "value1",
+					},
+				},
+				Spec: corev1.PodSpec{
+					InitContainers: []corev1.Container{
+						{
+							Name: "init-container1",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "ENV1",
+									Value: "value1",
+								},
+							},
+						},
+					},
+					Containers: []corev1.Container{
+						{
+							Name: "container0",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "ENV1",
+									Value: "value1",
+								},
+								podEnvSecret,
+							},
+						},
+					},
+				},
+			},
+			expected: &corev1.Pod{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "pod0",
+					Annotations: map[string]string{
+						annKeyPrefix + "zone": "value1",
+					},
+				},
+				Spec: corev1.PodSpec{
+					InitContainers: []corev1.Container{
+						{
+							Name: "init-container1",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "ENV1",
+									Value: "value1",
+								},
+								{
+									Name: "ZONE",
+									ValueFrom: &corev1.EnvVarSource{
+										FieldRef: &corev1.ObjectFieldSelector{
+											FieldPath: "metadata.labels['value1']",
+										},
+									},
+								},
+							},
+						},
+					},
+					Containers: []corev1.Container{
+						{
+							Name: "container0",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "ENV1",
+									Value: "value1",
+								},
+								podEnvSecret,
+								{
+									Name: "ZONE",
+									ValueFrom: &corev1.EnvVarSource{
+										FieldRef: &corev1.ObjectFieldSelector{
+											FieldPath: "metadata.labels['value1']",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			newPod := tt.pod.DeepCopy()

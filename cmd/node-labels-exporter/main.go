@@ -24,6 +24,7 @@ import (
 	"time"
 
 	flag "github.com/spf13/pflag"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/sergelogvinov/node-labels-exporter/pkg/nodelabelcontroller"
 
@@ -76,11 +77,18 @@ func main() {
 	var config *rest.Config
 	var err error
 
+	opts := zap.Options{
+		Development:     false,
+		Level:           zapcore.InfoLevel,
+		StacktraceLevel: zapcore.PanicLevel,
+	}
+	opts.BindFlags(goflag.CommandLine)
+
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Set("logtostderr", "true") //nolint: errcheck
 	flag.Parse()
 
-	ctrl.SetLogger(zap.New(zap.UseDevMode(false)))
+	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 	log := ctrl.Log.WithName("init")
 
 	log.Info("Node Labels exporter version", "version", version, "gitCommit", commit)

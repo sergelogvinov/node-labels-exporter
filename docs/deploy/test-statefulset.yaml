@@ -14,6 +14,7 @@ spec:
       annotations:
         injector.node-labels-exporter.sinextra.dev/zone: "topology.kubernetes.io/zone"
         injector.node-labels-exporter.sinextra.dev/node-pool: "node.kubernetes.io/instance-type"
+        # node-labels-exporter.sinextra.dev/containers: "alpine"
       labels:
         app: alpine
     spec:
@@ -36,6 +37,10 @@ spec:
                       - alpine
               topologyKey: topology.kubernetes.io/zone
       enableServiceLinks: false
+      initContainers:
+        - name: init
+          image: alpine
+          command: ["sh", "-c", "env"]
       containers:
         - name: alpine
           image: alpine
