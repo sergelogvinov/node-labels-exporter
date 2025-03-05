@@ -31,6 +31,7 @@ updates:
           - "k8s.io/apimachinery"
           - "k8s.io/client-go"
           - "k8s.io/component-base"
+          - "sigs.k8s.io/controller-runtime"
 
   - package-ecosystem: "docker"
     directory: "/"
