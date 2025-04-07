@@ -1,16 +1,16 @@
 module github.com/sergelogvinov/node-labels-exporter
 
-go 1.23.7
+go 1.24.2
 
 require (
 	github.com/go-logr/logr v1.4.2
 	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.27.0
-	k8s.io/api v0.32.2
-	k8s.io/apimachinery v0.32.2
-	k8s.io/client-go v0.32.2
-	sigs.k8s.io/controller-runtime v0.20.2
+	k8s.io/api v0.32.3
+	k8s.io/apimachinery v0.32.3
+	k8s.io/client-go v0.32.3
+	sigs.k8s.io/controller-runtime v0.20.4
 )
 
 require (

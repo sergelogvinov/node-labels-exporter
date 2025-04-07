@@ -167,7 +167,7 @@ func main() {
 		for _, v := range cacheSyncResult {
 			if !v {
 				log.Info("Failed to sync Informers!")
-				return
+				os.Exit(1)
 			}
 		}
 
