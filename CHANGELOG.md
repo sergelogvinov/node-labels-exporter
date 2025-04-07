@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/sergelogvinov/node-labels-exporter/compare/v0.4.0...v0.4.1) (2025-04-07)
+
+
+### Bug Fixes
+
+* helm chart version ([58a6375](https://github.com/sergelogvinov/node-labels-exporter/commit/58a637534a3da4bf27565731df773a1ece15b12b))
+
 ## [0.4.0](https://github.com/sergelogvinov/node-labels-exporter/compare/v0.3.0...v0.4.0) (2025-01-17)
 
 
