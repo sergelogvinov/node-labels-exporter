@@ -11,8 +11,8 @@ updates:
     rebase-strategy: disabled
     schedule:
       interval: "monthly"
-      day: "monday"
-      time: "08:00"
+      day: "saturday"
+      time: "07:00"
 
   - package-ecosystem: "gomod"
     directory: "/"
@@ -22,7 +22,7 @@ updates:
     rebase-strategy: disabled
     schedule:
       interval: "monthly"
-      day: "monday"
+      day: "saturday"
       time: "07:00"
     groups:
       k8s.io:
@@ -41,5 +41,5 @@ updates:
     rebase-strategy: disabled
     schedule:
       interval: "monthly"
-      day: "monday"
+      day: "saturday"
       time: "07:00"
