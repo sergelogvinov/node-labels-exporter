@@ -3,7 +3,7 @@ module github.com/sergelogvinov/node-labels-exporter
 go 1.24.2
 
 require (
-	github.com/go-logr/logr v1.4.2
+	github.com/go-logr/logr v1.4.3
 	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.27.0
