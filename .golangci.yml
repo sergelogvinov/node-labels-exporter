@@ -21,9 +21,9 @@ linters:
     - contextcheck
     - depguard
     - dupword
-    - err113
     - errorlint
     - exhaustruct
+    - err113
     - forbidigo
     - forcetypeassert
     - funlen

@@ -74,8 +74,10 @@ func init() {
 }
 
 func main() {
-	var config *rest.Config
-	var err error
+	var (
+		config *rest.Config
+		err    error
+	)
 
 	opts := zap.Options{
 		Development:     false,
@@ -112,6 +114,7 @@ func main() {
 		log.Info("Building kube configs for running in cluster...")
 		config, err = rest.InClusterConfig()
 	}
+
 	if err != nil {
 		log.Error(err, "Failed to create config: %v")
 		os.Exit(1)
@@ -122,6 +125,7 @@ func main() {
 
 	coreConfig := rest.CopyConfig(config)
 	coreConfig.ContentType = runtime.ContentTypeProtobuf
+
 	clientset, err := kubernetes.NewForConfig(coreConfig)
 	if err != nil {
 		log.Error(err, "Failed to create a Clientset")
@@ -163,6 +167,7 @@ func main() {
 		defer cancel()
 
 		factory.Start(ctx.Done())
+
 		cacheSyncResult := factory.WaitForCacheSync(ctx.Done())
 		for _, v := range cacheSyncResult {
 			if !v {
