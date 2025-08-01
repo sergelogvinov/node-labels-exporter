@@ -104,19 +104,23 @@ func main() {
 
 	if kubeconfigEnv != "" {
 		log.Info("Found KUBECONFIG environment variable set, using that..")
+
 		kubeconfig = &kubeconfigEnv
 	}
 
 	if *master != "" || *kubeconfig != "" {
 		log.Info("Either master or kubeconfig specified. building kube config from that..")
+
 		config, err = clientcmd.BuildConfigFromFlags(*master, *kubeconfig)
 	} else {
 		log.Info("Building kube configs for running in cluster...")
+
 		config, err = rest.InClusterConfig()
 	}
 
 	if err != nil {
 		log.Error(err, "Failed to create config: %v")
+
 		os.Exit(1)
 	}
 
