@@ -55,6 +55,7 @@ func setEnvsToPod(pod *corev1.Pod, envs map[string]string) {
 						pod.Spec.Containers[i].Env[j].ValueFrom = nil
 
 						updated = true
+
 						break
 					}
 				}

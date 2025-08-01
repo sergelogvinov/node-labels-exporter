@@ -85,10 +85,12 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 		podRaw, err := json.Marshal(pod)
 		if err != nil {
 			i.log.Error(err, "Failed to encode pod object")
+
 			return admission.Errored(http.StatusInternalServerError, err)
 		}
 
 		i.log.Info("Injecting envFrom to pod", "namespace", pod.Namespace, "name", name)
+
 		return admission.PatchResponseFromRaw(req.Object.Raw, podRaw)
 	}
 
@@ -102,6 +104,7 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 
 		if binding.Target.Kind != "Node" || binding.Target.Name == "" {
 			i.log.Info("Pod binding target is not Node or target name empty", "binding", binding)
+
 			return admission.Allowed("skipped")
 		}
 
@@ -110,12 +113,14 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 		pod, err := i.client.CoreV1().Pods(binding.Namespace).Get(ctx, binding.Name, metav1.GetOptions{})
 		if err != nil {
 			i.log.Error(err, "Failed to get pod", "namespace", binding.Namespace, "name", binding.Name)
+
 			return admission.Errored(http.StatusInternalServerError, fmt.Errorf("failed to get pod %s/%s: %v", binding.Namespace, binding.Name, err))
 		}
 
 		node, err := i.nodeLister.Get(binding.Target.Name)
 		if err != nil {
 			i.log.Error(err, "Failed to get node", "node", binding.Target.Name)
+
 			return admission.Errored(http.StatusInternalServerError, fmt.Errorf("failed to get node %s: %v", binding.Target.Name, err))
 		}
 
@@ -131,24 +136,28 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 		updatedBytes, err := json.Marshal(updated)
 		if err != nil {
 			i.log.Error(err, "Failed to encode new pod object")
+
 			return admission.Errored(http.StatusInternalServerError, err)
 		}
 
 		podBytes, err := json.Marshal(pod)
 		if err != nil {
 			i.log.Error(err, "Failed to encode old pod object")
+
 			return admission.Errored(http.StatusInternalServerError, err)
 		}
 
 		patchBytes, err := strategicpatch.CreateTwoWayMergePatch(podBytes, updatedBytes, &corev1.Pod{})
 		if err != nil {
 			i.log.Error(err, "Failed to create patch")
+
 			return admission.Errored(http.StatusInternalServerError, err)
 		}
 
 		_, err = i.client.CoreV1().Pods(binding.Namespace).Patch(ctx, binding.Name, types.StrategicMergePatchType, patchBytes, metav1.PatchOptions{})
 		if err != nil {
 			i.log.Error(err, "Failed to patch pod", "namespace", binding.Namespace, "name", binding.Name)
+
 			return admission.Errored(http.StatusInternalServerError, err)
 		}
 
