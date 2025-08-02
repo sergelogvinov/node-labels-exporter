@@ -10,7 +10,7 @@ git commit --allow-empty -m "chore: release 2.0.0" -m "Release-As: 2.0.0"
 
 ```shell
 git checkout release-please--branches--main
-git tag v0.0.2
+export `jq -r '"TAG=v"+.[]' .github/release-please-manifest.json`
 
 make helm-unit docs
 
