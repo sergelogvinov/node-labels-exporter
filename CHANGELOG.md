@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/sergelogvinov/node-labels-exporter/compare/v0.4.1...v0.5.0) (2025-08-02)
+
+
+### Features
+
+* release please signoff ([5c9f7ad](https://github.com/sergelogvinov/node-labels-exporter/commit/5c9f7ade525df5780106354666c62c01daf1562f))
+
+
+### Bug Fixes
+
+* linter errors ([e2f0ec0](https://github.com/sergelogvinov/node-labels-exporter/commit/e2f0ec0c1dc5e0a86e192a221ee911482f546c48))
+
 ## [0.4.1](https://github.com/sergelogvinov/node-labels-exporter/compare/v0.4.0...v0.4.1) (2025-04-07)
 
 
