@@ -3,6 +3,7 @@
     "pull-request-header": ":robot: I have created a release",
     "pull-request-title-pattern": "chore: release v${version}",
     "group-pull-request-title-pattern": "chore: release v${version}",
+    "signoff": "github-actions[bot] <github-actions[bot]@users.noreply.github.com>",
     "packages": {
         ".": {
             "changelog-path": "CHANGELOG.md",
