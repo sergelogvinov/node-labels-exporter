@@ -65,7 +65,7 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 
 	if req.RequestKind.Kind == "Pod" {
 		pod := &corev1.Pod{}
-		if err := i.decoder.Decode(req, pod); err != nil {
+		if err := i.decoder.Decode(req, pod); err != nil { //nolint: noinlineerr
 			i.log.Error(err, "Failed to decode request object")
 
 			return admission.Errored(http.StatusBadRequest, err)
@@ -96,7 +96,7 @@ func (i *NodeLabelsEnvInjector) Handle(ctx context.Context, req admission.Reques
 
 	if req.RequestKind.Kind == "Binding" {
 		binding := &corev1.Binding{}
-		if err := json.Unmarshal(req.Object.Raw, binding); err != nil {
+		if err := json.Unmarshal(req.Object.Raw, binding); err != nil { //nolint: noinlineerr
 			i.log.Error(err, "Failed to decode request object")
 
 			return admission.Errored(http.StatusBadRequest, fmt.Errorf("json unmarshal Binding with error: %v", err))
