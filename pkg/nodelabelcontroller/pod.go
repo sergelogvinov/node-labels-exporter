@@ -90,6 +90,7 @@ func setEnvValueFromToPod(pod *corev1.Pod) bool {
 	for k, v := range pod.Annotations {
 		if k == annContainers {
 			containers = strings.Split(v, ",")
+
 			continue
 		}
 

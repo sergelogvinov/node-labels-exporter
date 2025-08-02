@@ -180,8 +180,8 @@ func main() {
 			}
 		}
 
-		if err := mgr.Start(ctx); err != nil {
-			log.Error(err, "problem running manage")
+		if err := mgr.Start(ctx); err != nil { //nolint: noinlineerr
+			log.Error(err, "problem running manager")
 			os.Exit(1)
 		}
 	}
