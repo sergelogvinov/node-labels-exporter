@@ -4,7 +4,7 @@ go 1.24.5
 
 require (
 	github.com/go-logr/logr v1.4.3
-	github.com/spf13/pflag v1.0.7
+	github.com/spf13/pflag v1.0.9
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.27.0
 	k8s.io/api v0.33.3
