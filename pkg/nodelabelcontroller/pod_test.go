@@ -25,6 +25,40 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func Test_annotationKeyToEnvName(t *testing.T) {
+	for _, tt := range []struct {
+		name     string
+		key      string
+		expected string
+		ok       bool
+	}{
+		{
+			name:     "valid annotation key",
+			key:      annKeyPrefix + "region",
+			expected: "REGION",
+			ok:       true,
+		},
+		{
+			name:     "valid annotation key with hyphen",
+			key:      annKeyPrefix + "node-zone",
+			expected: "NODE_ZONE",
+			ok:       true,
+		},
+		{
+			name:     "invalid annotation key",
+			key:      "some.other.key",
+			expected: "",
+			ok:       false,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			env, ok := annotationKeyToEnvName(tt.key)
+			assert.Equal(t, tt.expected, env)
+			assert.Equal(t, tt.ok, ok)
+		})
+	}
+}
+
 func Test_getEnvsFromNode(t *testing.T) {
 	node := &corev1.Node{
 		ObjectMeta: metav1.ObjectMeta{

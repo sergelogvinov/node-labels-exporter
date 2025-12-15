@@ -24,15 +24,20 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+func annotationKeyToEnvName(key string) (string, bool) {
+	if env, ok := strings.CutPrefix(key, annKeyPrefix); ok {
+		return strings.ReplaceAll(strings.ToUpper(env), "-", "_"), true
+	}
+
+	return "", false
+}
+
 func getEnvsFromNode(node *corev1.Node, pod *corev1.Pod) map[string]string {
 	envs := make(map[string]string)
 
 	for k, v := range pod.Annotations {
-		if strings.HasPrefix(k, annKeyPrefix) {
-			if label, ok := node.Labels[v]; ok {
-				env := strings.ToUpper(strings.TrimPrefix(k, annKeyPrefix))
-				env = strings.ReplaceAll(env, "-", "_")
-
+		if label, ok := node.Labels[v]; ok {
+			if env, ok := annotationKeyToEnvName(k); ok {
 				envs[env] = label
 			}
 		}
@@ -94,8 +99,7 @@ func setEnvValueFromToPod(pod *corev1.Pod) bool {
 			continue
 		}
 
-		if strings.HasPrefix(k, annKeyPrefix) {
-			env := strings.ReplaceAll(strings.ToUpper(strings.TrimPrefix(k, annKeyPrefix)), "-", "_")
+		if env, ok := annotationKeyToEnvName(k); ok {
 			envs[env] = v
 		}
 	}
