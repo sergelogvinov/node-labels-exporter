@@ -91,8 +91,8 @@ func main() {
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
-	log := ctrl.Log.WithName("init")
 
+	log := ctrl.Log.WithName("init")
 	log.Info("Node Labels exporter version", "version", version, "gitCommit", commit)
 
 	if *showVersion {
