@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/sergelogvinov/node-labels-exporter/compare/v0.5.0...v0.5.1) (2025-12-16)
+
+
+### Bug Fixes
+
+* chart version ([817bd8e](https://github.com/sergelogvinov/node-labels-exporter/commit/817bd8e7fbc731c08cef256b61ef41ce018ee2ec))
+
 ## [0.5.0](https://github.com/sergelogvinov/node-labels-exporter/compare/v0.4.1...v0.5.0) (2025-08-02)
 
 
